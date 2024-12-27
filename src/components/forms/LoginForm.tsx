@@ -28,14 +28,17 @@ type actionReturnValue =
 export default function LoginForm() {
   const { language } = useLanguage();
   const langData = language === "en" ? enAuth : arAuth;
+
   const actionData = useActionData<actionReturnValue>();
 
-  const { register } = useForm<formData>({
+  const { register, watch, formState } = useForm<formData>({
     defaultValues: {
       username: "",
       password: "",
     },
   });
+
+  const typeNarrowingAux = !(actionData instanceof Response) && actionData;
   return (
     <>
       <Form
@@ -43,15 +46,23 @@ export default function LoginForm() {
         // onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col justify-center items-center space-y-10"
       >
-        <CustomInput {...register("username", { minLength: 5 })}>
+        <CustomInput
+          {...register("username", { minLength: 5 })}
+          error={typeNarrowingAux && actionData.errorMessage!.length > 0}
+        >
           {langData.username}
         </CustomInput>
-        <CustomInput isPassword {...register("password")}>
+        <CustomInput
+          isPassword
+          {...register("password")}
+          valueLength={watch("password").length}
+          error={typeNarrowingAux && actionData.errorMessage!.length > 0}
+        >
           {langData.password}
         </CustomInput>
         <Button>SUBMIT THE FORM</Button>
       </Form>
-      {!(actionData instanceof Response) && actionData && (
+      {typeNarrowingAux && (
         <CustomErrorMessage>{actionData!.errorMessage}</CustomErrorMessage>
       )}
     </>
@@ -63,7 +74,7 @@ export async function action({
 }: ActionFunctionArgs): Promise<actionReturnValue> {
   const form = await request.formData();
   const formData = Object.fromEntries(form);
-  const data = z.object({
+  const dataShape = z.object({
     username: z
       .string()
       .min(3, "the username is too small")
@@ -71,8 +82,8 @@ export async function action({
     password: z.string(),
   });
 
-  const result = await data.safeParseAsync(formData);
-  console.log(result);
+  const result = await dataShape.safeParseAsync(formData);
+
   return result.success
     ? redirect("/App")
     : { errorMessage: "Invalid Credentials" };

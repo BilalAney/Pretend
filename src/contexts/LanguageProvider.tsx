@@ -16,7 +16,7 @@ export default function LanguageProvider({
 }: {
   children: ReactNode;
 }) {
-  const [language, setLanguage] = useState<"en" | "ar">("en");
+  const [language, setLanguage] = useState<languages>("en");
 
   function changeLanguage(lang: languages) {
     setLanguage(lang);

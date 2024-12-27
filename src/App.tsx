@@ -7,9 +7,10 @@ import ProtectedRoute, {
 import ErrorPage from "./routes/error/ErrorPage";
 import LanguageProvider from "./contexts/LanguageProvider";
 import { action as loginPageAction } from "./components/forms/LoginForm";
+import SignupPage from "./routes/auth/SignupPage";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/App",
     element: <ProtectedRoute />,
     loader: userLoader,
     errorElement: <ErrorPage />,
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
     index: true,
     element: <LoginPage />,
     action: loginPageAction,
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />,
   },
 ]);
 
