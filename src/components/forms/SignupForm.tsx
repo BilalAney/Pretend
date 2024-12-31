@@ -7,6 +7,7 @@ import InputRow from "../ui/custom/InputRow";
 import CustomCheckbox from "../ui/custom/CustomCheckbox";
 import CustomDatePicker from "../ui/custom/CustomDatePicker";
 import { DateRange } from "react-day-picker";
+import useSignup from "@/hooks/useSignup";
 
 const schema = z
   .object({
@@ -41,10 +42,15 @@ export default function SignupForm() {
     resolver: zodResolver(schema),
   });
 
-  console.log(watch("dob"));
+  const { error, isPending, mutate, data: user } = useSignup();
 
   function onSubmit(data: SchemaType) {
-    console.log(data);
+    mutate({
+      username: data.username,
+      dob: data.dob,
+      password: data.password,
+      email: data.email,
+    });
   }
 
   // FieldErrors is a type that is used to narrow down the type of the error object...
@@ -62,6 +68,7 @@ export default function SignupForm() {
           type="text"
           error={errors.username?.message}
           className="max-w-[200px]"
+          disabled={isPending}
           {...register("username")}
         >
           username
@@ -69,6 +76,7 @@ export default function SignupForm() {
         <CustomInput
           type="email"
           error={errors.email?.message}
+          disabled={isPending}
           {...register("email")}
         >
           email address
@@ -82,6 +90,7 @@ export default function SignupForm() {
           <CustomDatePicker
             onSelect={(date?: DateRange) => field.onChange(date)}
             error={errors.dob?.message}
+            disabled={isPending}
           >
             date of birth
           </CustomDatePicker>
@@ -91,6 +100,7 @@ export default function SignupForm() {
       <InputRow>
         <CustomInput
           error={errors.password?.message}
+          disabled={isPending}
           isPassword
           {...register("password")}
         >
@@ -98,6 +108,7 @@ export default function SignupForm() {
         </CustomInput>
         <CustomInput
           error={errors["repeat-password"]?.message}
+          disabled={isPending}
           isPassword
           {...register("repeat-password")}
         >
@@ -105,16 +116,21 @@ export default function SignupForm() {
         </CustomInput>
       </InputRow>
 
-      <CustomCheckbox {...register("terms")}>
+      <CustomCheckbox disabled={isPending} {...register("terms")}>
         I've read the terms and conditions and I agree on them
       </CustomCheckbox>
 
       <Button
-        disabled={!watch("terms")}
+        disabled={!watch("terms") || isPending}
         className="disabled:!cursor-not-allowed"
       >
         Create an account!
       </Button>
+      {error && (
+        <span className="text-red-500 text-xs">
+          {error.message.split("||")[1] || "Failed to sign up, try again"}
+        </span>
+      )}
     </form>
   );
 }

@@ -13,9 +13,12 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import CustomErrorMessage from "../ui/custom/CustomErrorMessage";
+import { queryClient } from "../../../queryClient";
+import { signin } from "@/services/AuthService";
+import toast from "react-hot-toast";
 
 interface formData {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -33,7 +36,7 @@ export default function LoginForm() {
 
   const { register, watch, formState } = useForm<formData>({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -47,10 +50,10 @@ export default function LoginForm() {
         className="flex flex-col justify-center items-center space-y-10"
       >
         <CustomInput
-          {...register("username", { minLength: 5 })}
+          {...register("email", { minLength: 5 })}
           error={typeNarrowingAux && actionData.errorMessage!.length > 0}
         >
-          {langData.username}
+          {langData.email}
         </CustomInput>
         <CustomInput
           isPassword
@@ -75,16 +78,31 @@ export async function action({
   const form = await request.formData();
   const formData = Object.fromEntries(form);
   const dataShape = z.object({
-    username: z
-      .string()
-      .min(3, "the username is too small")
-      .max(15, "the username too long"),
+    email: z.string().email("Invalid email"),
     password: z.string(),
   });
 
   const result = await dataShape.safeParseAsync(formData);
 
+  if (result.success) {
+    try {
+      const user = await toast.promise(
+        signin(formData.email as string, formData.password as string),
+        {
+          error: "Failed to signin",
+          loading: "Signing in",
+          success: "Signed in successfully",
+        }
+      );
+
+      queryClient.setQueryData(["user"], user);
+    } catch (e: unknown) {
+      if (e instanceof Error)
+        return { errorMessage: e.message.split("||").at(1) };
+    }
+  }
+
   return result.success
-    ? redirect("/App")
-    : { errorMessage: "Invalid Credentials" };
+    ? redirect("/app")
+    : { errorMessage: result.error.message };
 }

@@ -8,13 +8,26 @@ import ErrorPage from "./routes/error/ErrorPage";
 import LanguageProvider from "./contexts/LanguageProvider";
 import { action as loginPageAction } from "./components/forms/LoginForm";
 import SignupPage from "./routes/auth/SignupPage";
+import { Toaster } from "react-hot-toast";
+import AppLayout from "./routes/layout/AppLayout";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../queryClient";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const Publishable_Key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 const router = createBrowserRouter([
   {
     path: "/App",
     element: <ProtectedRoute />,
     loader: userLoader,
     errorElement: <ErrorPage />,
-    children: [{}],
+    children: [
+      {
+        index: true,
+        element: <AppLayout />,
+      },
+    ],
   },
   {
     index: true,
@@ -30,9 +43,13 @@ const router = createBrowserRouter([
 function App() {
   return (
     <div className="bg-background w-dvw h-dvh">
-      <LanguageProvider>
-        <RouterProvider router={router} />
-      </LanguageProvider>
+      <Toaster />
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <LanguageProvider>
+          <RouterProvider router={router} />
+        </LanguageProvider>
+      </QueryClientProvider>
     </div>
   );
 }
