@@ -28,7 +28,7 @@ type actionReturnValue =
     }
   | Response;
 
-export default function LoginForm() {
+export default function LoginForm({ isPending }: { isPending: boolean }) {
   const { language } = useLanguage();
   const langData = language === "en" ? enAuth : arAuth;
 
@@ -52,6 +52,7 @@ export default function LoginForm() {
         <CustomInput
           {...register("email", { minLength: 5 })}
           error={typeNarrowingAux && actionData.errorMessage!.length > 0}
+          disabled={isPending}
         >
           {langData.email}
         </CustomInput>
@@ -60,10 +61,11 @@ export default function LoginForm() {
           {...register("password")}
           valueLength={watch("password").length}
           error={typeNarrowingAux && actionData.errorMessage!.length > 0}
+          disabled={isPending}
         >
           {langData.password}
         </CustomInput>
-        <Button>SUBMIT THE FORM</Button>
+        <Button disabled={isPending}>LOG IN</Button>
       </Form>
       {typeNarrowingAux && (
         <CustomErrorMessage>{actionData!.errorMessage}</CustomErrorMessage>

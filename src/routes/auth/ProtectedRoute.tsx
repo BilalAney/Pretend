@@ -16,6 +16,7 @@ export default function ProtectedRoute() {
   const { state } = useNavigation();
   const queryClient = useQueryClient();
   const data = useLoaderData();
+
   if (data) {
     queryClient.setQueryData(["user", data.user.UID], data);
     queryClient.setQueryData(["user"], data.data);
@@ -29,5 +30,6 @@ export async function loader(): Promise<{ user: user; data: User } | null> {
   const { data, error } = await supabase.auth.getUser();
   if (!data.user || error) return null;
   const user = await getUser(data.user.id);
+  console.log("=> => => Protected Route Loader is HERE!");
   return { user, data: data.user };
 }

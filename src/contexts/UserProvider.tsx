@@ -31,5 +31,5 @@ export function useUser() {
     throw new Error(
       "The useUser hook must be called within the UserProvider context."
     );
-  return value?.user;
+  return value.user;
 }
