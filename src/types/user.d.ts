@@ -1,9 +1,11 @@
 /** @format */
 
 export interface user {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  profileImage?: string;
-  isAuth: boolean;
+  id: string | number;
+  created_at: Date | string;
+  username: string;
+  email: string;
+  photo?: string | null;
+  dob: Date | string;
+  UID: string;
 }

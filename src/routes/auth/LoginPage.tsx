@@ -6,7 +6,6 @@ import { Navigate } from "react-router-dom";
 
 export default function LoginPage() {
   const { isSigned, error, isPending } = useIsSignedin();
-  console.log("=> => => Login Page is HERE! and the isSigned is: ", isSigned);
 
   if (isSigned) return <Navigate to="/App" />;
   return (

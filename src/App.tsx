@@ -9,10 +9,11 @@ import LanguageProvider from "./contexts/LanguageProvider";
 import { action as loginPageAction } from "./components/forms/LoginForm";
 import SignupPage from "./routes/auth/SignupPage";
 import { Toaster } from "react-hot-toast";
-import AppLayout from "./routes/layout/AppLayout";
+
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../queryClient";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import AppLayoutContextWrapper from "./routes/layout/AppLayoutContextWrapper";
 
 const Publishable_Key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <AppLayout />,
+        element: <AppLayoutContextWrapper />,
       },
     ],
   },

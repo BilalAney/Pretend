@@ -17,8 +17,8 @@ export default function useIsSignedin() {
         setIsPending(false);
       }
     }
-    console.log(" => => => the Effect RAN!");
     checkUser();
+    console.log(" => => => the Effect that checks if the user exists RAN!");
   }, []);
   return { isSigned, isPending, error };
 }

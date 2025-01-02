@@ -35,7 +35,7 @@ export async function signin(email: string, password: string) {
 
   if (error) throw new Error("Failed to signin \n\n ||" + error.message);
 
-  return data;
+  return data.user;
 }
 
 export async function signout() {
